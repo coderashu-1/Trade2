@@ -2,53 +2,46 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
-const config = require("config");
 const cors = require("cors");
-var nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer");
 
 const app = express();
-// huh
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// get mongoDB login & connect
+// MongoDB Connection
 const db = process.env.mongoURI;
 mongoose
   .connect(db, {
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useUnifiedTopology: true
   })
-  .then(() => console.log("mongoDBconnected"))
-  .catch(err => console.log(err));
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => {
+    console.error("MongoDB connection error:", err.message);
+    process.exit(1); // Exit if DB connection fails
+  });
 
-// Middleware
-/*
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
-*/
+// API Routes
 app.use("/api/user", require("./api/user"));
 app.use("/api/stocks", require("./api/stocks"));
 app.use("/api/authorize", require("./api/authorize"));
 app.use("/api/iex", require("./api/iex"));
 app.use("/api/email", require("./api/email"));
 
-// serve static assets if in production
+// Serve React frontend in production
 if (process.env.NODE_ENV === "production") {
-  //set static folder
+  app.use(express.static(path.join(__dirname, "client", "build")));
 
-  app.use(express.static("client/build"));
-
+  // Handle SPA routing, serve index.html for all unknown routes
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 }
 
-const port = process.env.PORT || 5051;
-// test
-app.listen(port, () => console.log(`Server started on port ${port}`));
+// Start server
+const PORT = process.env.PORT || 5051;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
