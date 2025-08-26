@@ -36,11 +36,11 @@
     "uuid": "^3.3.3"
   },
   "scripts": {
-    "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
-    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
+  "start": "react-scripts start",
+  "build": "react-scripts build",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
+},
   "proxy": "http://localhost:5051",
   "eslintConfig": {
     "extends": "react-app"
@@ -64,3 +64,4 @@
     "cross-env": "^7.0.3"
   }
 }
+
